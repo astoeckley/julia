@@ -101,6 +101,36 @@
          (aset-int pixels (+ x (* y w)) (rgb-of v))))
      (update-pixels))))
 
+(defn do-iterations [max-its escape z_n itfn]
+  (count (take-while #(< (mag2 %) escape)
+                     (take max-its
+                           (iterate itfn z_n)))))
+
+(defn pt-to-plane [x y w h]
+  ;; maps a pixel co-ordinate to a point on the complex plane
+  (let [s 2]
+    (complex. (* 2 s (- (double (/ x w)) 0.5))
+              (* 2 s (- (double (/ y h)) 0.5)))))
+
+(defn col-of [v]
+  [(int (* 10 v)) 100 100])
+
+
+#_
+(defn draw []
+  (time
+   (let [w (width)
+         h (height)
+         c (pt-to-plane (mouse-x) (mouse-y) w h)]
+
+     (doseq [x (range w)
+             y (range h)]
+
+       (let [iteration-fn (ifn c 5)
+             v (do-iterations 10 4 (pt-to-plane x y w h) iteration-fn)]
+
+         (apply stroke (col-of v))
+         (point x y))))))
 
 (defsketch julia
   :title "Julia"
